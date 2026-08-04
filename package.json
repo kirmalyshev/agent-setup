@@ -1,0 +1,27 @@
+{
+  "name": "agent-setup",
+  "version": "1.0.0",
+  "private": false,
+  "license": "MIT",
+  "description": "A starting setup for Claude Code: credential guardrails, a token-compacting CLI proxy, and two plugins worth having on day one",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kirmalyshev/agent-setup.git"
+  },
+  "homepage": "https://github.com/kirmalyshev/agent-setup#readme",
+  "scripts": {
+    "check": ".claude/scripts/run-security-checks.sh",
+    "check:verbose": ".claude/scripts/run-security-checks.sh -v",
+    "test": "bun test ./.claude/hooks/tests/",
+    "typecheck": "tsc --noEmit",
+    "scan": "bun .claude/scripts/scan.ts",
+    "scan:staged": "bun .claude/scripts/scan.ts --staged",
+    "install:hooks": "./install.sh",
+    "install:check": "./install.sh --check"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "typescript": "^7.0.2"
+  }
+}

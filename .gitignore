@@ -1,0 +1,26 @@
+# Never commit a credential store, whatever it is called locally.
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*service-account*.json
+.npmrc
+.netrc
+
+# Per-engineer overrides belong on the machine, not in the shared baseline.
+agent-setup.local.json
+
+# Local session history and tool output — machine-local, and it quotes whatever
+# was in the transcript, so it is exactly the kind of thing not to publish.
+.remember/
+tool-results/
+
+node_modules/
+.DS_Store

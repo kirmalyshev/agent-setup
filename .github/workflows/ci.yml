@@ -1,0 +1,106 @@
+name: ci
+
+# These hooks run on other people's machines and decide whether a credential
+# leaves them. A regression here is not a broken build, it is a silently
+# weakened control, so the full battery runs on every push — not just the unit
+# tests.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: typecheck
+        run: bun run typecheck
+
+      # Unit tests plus end-to-end: real JSON on real stdin through the real
+      # hook processes. The bootstrap section clones this checkout at HEAD and
+      # runs a full install into a redirected $HOME; a depth-1 checkout is
+      # enough for that, so the default actions/checkout fetch depth stands.
+      - name: check battery
+        run: bun run check
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck bootstrap.sh install.sh installers/*.sh .claude/scripts/*.sh install/scripts/*.sh
+
+  onboarding-steps:
+    # The step files under install/scripts/ are what /run-agent-setup reads out
+    # loud to someone deciding whether to let this change their machine. Nothing
+    # else forces them to still be true, and a stale one reads perfectly.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./install/scripts/check-steps.sh
+
+  dry-run:
+    # Proves the installer plans a complete install against an empty config dir
+    # without touching anything. rtk, herdr and plugins are skipped where they
+    # would run for real: all three reach the network and mutate machine-global
+    # state, which is not what a plan should do.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --dry-run
+      - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only herdr --dry-run
+      - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only security --yes
+      - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only security --check
+
+      # The seven workflow skills link, and the two guardrail skills are NOT
+      # among them — that split is the whole reason skills is its own module.
+      - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only skills --yes
+      - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only skills --check
+      - name: skills split is honoured
+        run: |
+          set -euo pipefail
+          for s in LlmDataBoundary SecretHygiene; do
+            test -L "$RUNNER_TEMP/claude/skills/$s" \
+              || { echo "guardrail skill $s missing — it belongs to the security module"; exit 1; }
+          done
+          ./install.sh --config-dir "$RUNNER_TEMP/claude" --only skills --uninstall
+          for s in LlmDataBoundary SecretHygiene; do
+            test -L "$RUNNER_TEMP/claude/skills/$s" \
+              || { echo "uninstalling skills removed guardrail skill $s"; exit 1; }
+          done
+          test ! -e "$RUNNER_TEMP/claude/skills/RedTeam" \
+            || { echo "uninstalling skills left RedTeam behind"; exit 1; }
+
+  bootstrap-without-bun:
+    # The entry point runs on a machine where bun does not exist yet — installing
+    # it is part of what the user has not agreed to at that point. This is the
+    # only job that covers that, and it is the case the whole flow depends on.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install /run-agent-setup with no bun on PATH
+        run: |
+          set -euo pipefail
+          command -v bun >/dev/null 2>&1 && { echo "bun is on PATH; this job must run without it"; exit 1; }
+          ./install.sh --config-dir "$RUNNER_TEMP/fresh" --only onboarding --yes
+          ./install.sh --config-dir "$RUNNER_TEMP/fresh" --only onboarding --check
+          test -r "$RUNNER_TEMP/fresh/commands/run-agent-setup.md" \
+            || { echo "/run-agent-setup did not resolve to a readable file"; exit 1; }
+          test ! -s "$RUNNER_TEMP/fresh/settings.json" \
+            || { echo "onboarding wrote settings.json — it must install nothing else"; exit 1; }
+          ./install.sh --config-dir "$RUNNER_TEMP/fresh" --only onboarding --uninstall
+          test ! -e "$RUNNER_TEMP/fresh/commands/run-agent-setup.md" \
+            || { echo "/run-agent-setup survived its own uninstall"; exit 1; }

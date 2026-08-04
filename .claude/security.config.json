@@ -1,0 +1,20 @@
+{
+  "$comment": [
+    "Company security baseline. Committed — this is the shared policy.",
+    "Per-engineer overrides go in ~/.claude/agent-setup.local.json (never committed).",
+    "",
+    "posture:  strict   block high + medium confidence",
+    "          balanced block high, ask on medium, warn on low   <- default",
+    "          audit    warn only, block nothing (pilot mode)",
+    "",
+    "Full field reference: README.md § Configuration"
+  ],
+  "posture": "balanced",
+  "sessionNotice": true,
+  "auditToolOutput": true,
+  "ignorePatternIds": [],
+  "ignorePathRuleIds": [],
+  "ignoreDumpCommandIds": [],
+  "allowHashes": [],
+  "allowPaths": []
+}
