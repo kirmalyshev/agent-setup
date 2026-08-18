@@ -140,7 +140,7 @@ the steps involved:
 A user whose config dir was already full should hear that from you in the
 summary, not discover it as a failure four steps in.
 
-**3. Frame it once.** Briefly: seven steps, they approve each one, nothing
+**3. Frame it once.** Briefly: eight steps, they approve each one, nothing
 happens without a yes, and everything is reversible. Do not paste the whole plan
 — they will read each step as it comes.
 

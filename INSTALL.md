@@ -46,7 +46,7 @@ settings. If it fails, report the failure and stop.
 **4. Hand off to the procedure — carrying the config dir with you.**
 
 Read `~/.agent-setup/.claude/commands/run-agent-setup.md` and follow it. It is
-the walkthrough: seven modules, each explaining what it does and what it
+the walkthrough: eight modules, each explaining what it does and what it
 touches, each asking before anything changes. Do not summarise it away or skip
 ahead — the explanations are the product here, not packaging around it.
 
@@ -59,7 +59,7 @@ explicitly and use `--config-dir` on every command it tells you to run.
 
 Getting this wrong is silent rather than loud. If a baseline symlink already
 exists at the default `~/.claude` — from an earlier install, say — the
-walkthrough resolves it, finds a valid checkout, and installs seven modules into
+walkthrough resolves it, finds a valid checkout, and installs eight modules into
 a config dir the user never asked for, reporting success the whole way.
 
 The user can also run `/run-agent-setup` in a new session to get the same

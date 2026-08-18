@@ -11,7 +11,7 @@ The security hooks are TypeScript. Something has to run them on every tool call,
 and that something is `bun` — a JavaScript runtime that starts fast enough to
 sit in front of every action an agent takes without you noticing it.
 
-Homebrew is the package manager the two command-line tools later in this setup
+Homebrew is the package manager the command-line tools later in this setup
 come from. On macOS, installing it needs your password.
 
 This step is not optional. Every module after it assumes both exist, and the

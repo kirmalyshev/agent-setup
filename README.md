@@ -10,7 +10,7 @@ Copy this into Claude Code and hit Enter:
 https://raw.githubusercontent.com/kirmalyshev/agent-setup/main/INSTALL.md install this into my ~/.claude
 ```
 
-**Nothing is installed by that.** The agent reads [`INSTALL.md`](INSTALL.md), clones the repo to `~/.agent-setup`, and adds one command — `/run-agent-setup`. Then it walks you through the rest: seven steps, each explaining what it is, why it matters and exactly which files it touches, each asking before anything changes. Skip whatever you don't want. A few minutes, most of it reading.
+**Nothing is installed by that.** The agent reads [`INSTALL.md`](INSTALL.md), clones the repo to `~/.agent-setup`, and adds one command — `/run-agent-setup`. Then it walks you through the rest: eight steps, each explaining what it is, why it matters and exactly which files it touches, each asking before anything changes. Skip whatever you don't want. A few minutes, most of it reading.
 
 That split is deliberate. An installer that sets up hooks, packages and plugins in one go is asking you to consent to all of it by consenting to none of it.
 
@@ -40,9 +40,10 @@ git clone https://github.com/kirmalyshev/agent-setup ~/.agent-setup
 | **security guardrails** | 4 hooks + 2 skills | Stops credentials leaking into transcripts you don't control |
 | **[rtk](https://www.rtk-ai.app/)** | Compacts command output | `git status` and `npm test` cost tokens. Often 60–90% less |
 | **[herdr](https://herdr.dev/)** | One terminal for every agent | Six windows become one, with per-agent state — see [chapter 3](#3-herdr--one-terminal-for-every-agent) |
+| **[jira-cli](https://github.com/ankitpokhrel/jira-cli)** | Jira from the terminal | List, view, create and transition issues without a browser tab — see [chapter 4](#4-jira-cli--jira-from-the-terminal) |
 | **[caveman](https://github.com/JuliusBrussee/caveman)** | Compressed replies, on demand | ~75% fewer output tokens. Off until you run `/caveman` |
 | **[code-review](https://github.com/anthropics/claude-plugins-official)** | `/code-review` over your diff | Catches what the agent that just wrote it won't |
-| **9 skills** | Named workflows you invoke | Postmortems, design stress-tests, doc style — see [chapter 6](#6-the-skills) |
+| **9 skills** | Named workflows you invoke | Postmortems, design stress-tests, doc style — see [chapter 7](#7-the-skills) |
 
 Each of these is one step in `/run-agent-setup`, and each is optional except the guardrails. It also offers `bun` and Homebrew if you don't have them — see [Prerequisites](#prerequisites).
 
@@ -120,7 +121,21 @@ No login daemon is registered. herdr suggests `brew services start herdr` — th
 
 ---
 
-# 4. caveman — knowing when to spend tokens
+# 4. jira-cli — Jira from the terminal
+
+If your work tracker is Jira, this gets you [jira-cli](https://github.com/ankitpokhrel/jira-cli) — list, view, create and transition issues from the terminal instead of a browser tab.
+
+No Claude Code integration here, unlike rtk and herdr: this step only puts the `jira` binary on your PATH.
+
+```bash
+jira init     # point it at your server — this installer never runs this for you
+```
+
+Nobody without a Jira account needs this. Skip it and everything else still works.
+
+---
+
+# 5. caveman — knowing when to spend tokens
 
 Strips articles, filler and pleasantries from replies. *"Sure! I'd be happy to help you with that. The issue you're experiencing is likely caused by…"* becomes *"Bug in auth middleware. Token expiry check use `<` not `<=`. Fix:"*
 
@@ -136,7 +151,7 @@ On for long mechanical sessions in a domain you know. Off when you're learning, 
 
 ---
 
-# 5. code-review — before you push
+# 6. code-review — before you push
 
 `/code-review` reviews your working diff.
 
@@ -144,7 +159,7 @@ Agent-written code usually works. The failure mode is that it works for the case
 
 ---
 
-# 6. The skills
+# 7. The skills
 
 A skill is a named workflow the agent loads on demand. It costs nothing until you
 ask for it, so the list can be long without slowing your sessions down.
@@ -172,7 +187,7 @@ ask for it, so the list can be long without slowing your sessions down.
 
 ---
 
-# 7. Habits that outlast this repo
+# 8. Habits that outlast this repo
 
 Five things. None need any tool.
 
@@ -201,7 +216,7 @@ The installer adds these if they are missing:
 | | |
 |---|---|
 | **bun** | Required — the hooks are TypeScript and bun runs them |
-| **Homebrew** | For rtk and herdr. On macOS it needs sudo; without it, everything else still installs |
+| **Homebrew** | For rtk, herdr and jira-cli. On macOS it needs sudo; without it, everything else still installs |
 
 Both come from their projects' own official installers, which means this repo
 pipes two remote scripts into a shell — the pattern [chapter 1](#1-credentials--the-one-that-matters)
@@ -242,8 +257,8 @@ Inside your config dir (`~/.claude` unless `$CLAUDE_CONFIG_DIR` says otherwise),
 ~/.claude/agent-setup.plugins          → which plugins this installer added
 ```
 
-Not touched: `~/.config/herdr/config.toml`. That is herdr's own config, and this
-repo neither writes nor removes it.
+Not touched: `~/.config/herdr/config.toml` and `~/.config/.jira/.config.yml` —
+herdr's and jira-cli's own configs. This repo neither writes nor removes either.
 
 Plus, only when they were missing: `~/.bun` and Homebrew's prefix. Both
 installers also append to your shell profile — that is theirs, not ours.
@@ -260,7 +275,7 @@ git -C ~/.agent-setup pull              # update
 
 `--check` is the one to remember. A baseline registered in a config dir your sessions never read looks installed and protects nothing — the worst failure a security control can have.
 
-Uninstall removes the symlinks, hook entries, rtk's and herdr's registrations, and any plugin **this installer added** (tracked in `agent-setup.plugins`). Plugins you already had are left alone, as are marketplaces. The rtk and herdr binaries stay on your PATH — they are useful on their own.
+Uninstall removes the symlinks, hook entries, rtk's and herdr's registrations, and any plugin **this installer added** (tracked in `agent-setup.plugins`). Plugins you already had are left alone, as are marketplaces. The rtk, herdr and jira-cli binaries stay on your PATH — they are useful on their own.
 
 ### Installing only part of it
 
@@ -271,7 +286,7 @@ Uninstall removes the symlinks, hook entries, rtk's and herdr's registrations, a
 ```
 
 `/run-agent-setup` does the same thing, one module at a time, with the explanations. The
-modules are `onboarding`, `prereqs`, `security`, `rtk`, `herdr`, `plugins`,
+modules are `onboarding`, `prereqs`, `security`, `rtk`, `herdr`, `jira`, `plugins`,
 `skills`.
 
 Every flag: `./install.sh --help`.
@@ -289,6 +304,7 @@ installers/
   security.sh         hooks, 2 skills, /security-scan        failure is fatal
   rtk.sh              brew install + rtk init                failure warns
   herdr.sh            brew install + integration install     failure warns
+  jira.sh             brew install, nothing else             failure warns
   plugins.sh          caveman, code-review                   failure warns
   skills.sh           the 7 workflow skills                  failure warns
 install/scripts/
@@ -297,7 +313,7 @@ install/scripts/
 .claude/
   commands/run-agent-setup.md   the guided-install procedure
   hooks/              four entry points + guards + detection core
-  skills/             9 skills, one directory each, CamelCase (see chapter 6)
+  skills/             9 skills, one directory each, CamelCase (see chapter 7)
   scripts/            merge-settings.ts, scan.ts, run-security-checks.sh
 ```
 
@@ -324,4 +340,4 @@ New patterns go in `.claude/hooks/lib/patterns.ts` with a test alongside. False 
 
 ### License
 
-MIT — see [LICENSE](LICENSE). The security hooks began as an internal baseline, generalised for public use. rtk, herdr, caveman and code-review are third-party projects with their own licenses; this repo installs them, it doesn't vendor them.
+MIT — see [LICENSE](LICENSE). The security hooks began as an internal baseline, generalised for public use. rtk, herdr, jira-cli, caveman and code-review are third-party projects with their own licenses; this repo installs them, it doesn't vendor them.

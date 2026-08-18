@@ -4,8 +4,8 @@
 #
 #   bun    REQUIRED. The hooks are TypeScript and bun executes them. Without it
 #          nothing in this repo runs, so a failure here is fatal.
-#   brew   OPTIONAL. Only used to install rtk, which lives in homebrew-core.
-#          A failure here costs you rtk and nothing else.
+#   brew   OPTIONAL. Only used to install rtk, herdr and jira-cli.
+#          A failure here costs you those three and nothing else.
 #
 # HONESTY NOTE — this module pipes two remote scripts into a shell, which is the
 # pattern the README tells you to distrust. It is here because the alternative is
@@ -107,7 +107,7 @@ prereqs_install_brew() {
     return 0
   fi
 
-  warn "Homebrew is not installed. It is only needed for rtk."
+  warn "Homebrew is not installed. It is only needed for rtk, herdr and jira-cli."
   info "on macOS this needs sudo and may pull the Xcode command line tools (large)."
   info "as root, or with a warm sudo timestamp, it proceeds unattended."
   info "NONINTERACTIVE=1 bash -c \"\$(curl -fsSL $BREW_INSTALLER_URL)\""
@@ -116,9 +116,9 @@ prereqs_install_brew() {
   # when stdin is the install pipeline. It does NOT supply sudo credentials.
   if ! NONINTERACTIVE=1 bash -c "$(curl -fsSL "$BREW_INSTALLER_URL")" >/dev/null 2>&1; then
     warn "the Homebrew installer did not complete — most likely sudo was needed and unavailable."
-    info "install it yourself and re-run this, or skip rtk entirely:"
+    info "install it yourself and re-run this, or skip its consumers entirely:"
     info "  /bin/bash -c \"\$(curl -fsSL $BREW_INSTALLER_URL)\""
-    info "  ./install.sh --skip rtk"
+    info "  ./install.sh --skip rtk,herdr,jira"
     return 1
   fi
 
@@ -142,12 +142,12 @@ prereqs_install() {
   # so there is no useful partial outcome where bun is missing.
   prereqs_install_bun || return 1
 
-  # brew is best-effort. Its only consumer is the rtk module, which is itself
-  # non-fatal, so a machine that ends up without either is still fully protected.
+  # brew is best-effort. Its consumers are the rtk, herdr and jira modules, all
+  # non-fatal, so a machine that ends up without it is still fully protected.
   # rc stays 0 deliberately — a failure here must not fail the module and stop
   # security from running.
   if ! prereqs_install_brew; then
-    warn "continuing without Homebrew — rtk will be skipped."
+    warn "continuing without Homebrew — rtk, herdr and jira-cli will be skipped."
     PROBLEMS=$((PROBLEMS + 1))
   fi
 
@@ -166,7 +166,7 @@ prereqs_check() {
   if command -v brew >/dev/null 2>&1 || prereqs_adopt_brew_path; then
     ok_line "Homebrew at $(brew --prefix 2>/dev/null)"
   else
-    note_line "Homebrew not installed — only needed for rtk"
+    note_line "Homebrew not installed — only needed for rtk, herdr and jira-cli"
   fi
 
   return $rc

@@ -10,6 +10,7 @@
 #   security   four credential hooks, 2 skills, /security-scan     (FATAL)
 #   rtk        the token-compacting CLI proxy                      (warn only)
 #   herdr      one terminal for every agent                        (warn only)
+#   jira       the Jira CLI (ankitpokhrel/jira-cli)                (warn only)
 #   plugins    caveman and code-review                             (warn only)
 #   skills     the seven workflow skills                           (warn only)
 #
@@ -68,7 +69,7 @@ DEFAULT_ROOT="$HOME/.claude"
 # Order matters. onboarding is first because bootstrap.sh runs it alone, before
 # anything has been consented to. prereqs installs the toolchain the rest of the
 # list needs, so everything after it can assume bun exists.
-ALL_MODULES="onboarding prereqs security rtk herdr plugins skills"
+ALL_MODULES="onboarding prereqs security rtk herdr jira plugins skills"
 # Load-bearing modules, listed rather than inferred, so promoting one is a
 # deliberate edit. prereqs is fatal because bun executes every hook; security is
 # fatal because it is the thing this repo exists for.
@@ -464,6 +465,9 @@ if list_has "$MODULES" rtk; then
 fi
 if list_has "$MODULES" herdr; then
   printf '  Agent terminal herdr\n'
+fi
+if list_has "$MODULES" jira; then
+  printf '  Jira CLI       jira init   (point it at your instance)\n'
 fi
 if list_has "$MODULES" onboarding; then
   printf '  Guided setup   /run-agent-setup   (in Claude Code)\n'
