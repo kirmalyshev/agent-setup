@@ -65,7 +65,7 @@ jobs:
       - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only security --yes
       - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only security --check
 
-      # The seven workflow skills link, and the two guardrail skills are NOT
+      # The eight workflow skills link, and the two guardrail skills are NOT
       # among them — that split is the whole reason skills is its own module.
       - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only skills --yes
       - run: ./install.sh --config-dir "$RUNNER_TEMP/claude" --only skills --check

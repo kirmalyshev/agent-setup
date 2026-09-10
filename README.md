@@ -43,7 +43,7 @@ git clone https://github.com/kirmalyshev/agent-setup ~/.agent-setup
 | **[jira-cli](https://github.com/ankitpokhrel/jira-cli)** | Jira from the terminal | List, view, create and transition issues without a browser tab — see [chapter 4](#4-jira-cli--jira-from-the-terminal) |
 | **[caveman](https://github.com/JuliusBrussee/caveman)** | Compressed replies, on demand | ~75% fewer output tokens. Off until you run `/caveman` |
 | **[code-review](https://github.com/anthropics/claude-plugins-official)** | `/code-review` over your diff | Catches what the agent that just wrote it won't |
-| **9 skills** | Named workflows you invoke | Postmortems, design stress-tests, doc style — see [chapter 7](#7-the-skills) |
+| **10 skills** | Named workflows you invoke | Postmortems, design stress-tests, doc style — see [chapter 7](#7-the-skills) |
 
 Each of these is one step in `/run-agent-setup`, and each is optional except the guardrails. It also offers `bun` and Homebrew if you don't have them — see [Prerequisites](#prerequisites).
 
@@ -180,10 +180,11 @@ ask for it, so the list can be long without slowing your sessions down.
 |---|---|
 | **[Ship](.claude/skills/Ship/SKILL.md)** | Commit, push and open a PR with tests and review running in parallel first |
 | **[TechDocWriting](.claude/skills/TechDocWriting/SKILL.md)** | Writing a README or a runbook. A style guide derived from ASD-STE100 Simplified Technical English |
+| **[CreateSkill](.claude/skills/CreateSkill/SKILL.md)** | Writing or fixing a skill. Scaffolds it, checks the structure, tests it against a no-skill baseline, tunes the description so it triggers |
 | **[SecretHygiene](.claude/skills/SecretHygiene/SKILL.md)** | A guard blocked you, or a credential reached a transcript. Rotation playbooks, allowlisting |
 | **[LlmDataBoundary](.claude/skills/LlmDataBoundary/SKILL.md)** | Deciding whether something may leave the machine. Read this one before you need it |
 
-`RedTeam` and `Council` spawn several agents each — they cost real tokens. The rest are cheap.
+`RedTeam`, `Council`, and CreateSkill's test workflows spawn several agents each — they cost real tokens. The rest are cheap.
 
 ---
 
@@ -313,7 +314,7 @@ install/scripts/
 .claude/
   commands/run-agent-setup.md   the guided-install procedure
   hooks/              four entry points + guards + detection core
-  skills/             9 skills, one directory each, CamelCase (see chapter 7)
+  skills/             10 skills, one directory each, CamelCase (see chapter 7)
   scripts/            merge-settings.ts, scan.ts, run-security-checks.sh
 ```
 

@@ -3,7 +3,7 @@ module: skills
 fatal: false
 requires: [security]
 ---
-# skills — seven named workflows
+# skills — eight named workflows
 
 ## Why
 
@@ -25,6 +25,7 @@ difference.
 | `BitterPillEngineering` | Audits your own instruction files for rules a better model made unnecessary |
 | `TechDocWriting` | Docs in controlled plain English, so they stop reading like generic model prose |
 | `Ship` | Stage, commit, push, open a PR, with tests and review in parallel |
+| `CreateSkill` | Writes and fixes skills: scaffold, validate, test against a no-skill baseline, tune the trigger description |
 
 These cost nothing until invoked. A skill is a file on disk; it does not run, it
 does not consume context, and it does not change how the agent behaves until you
@@ -34,7 +35,7 @@ Skipping them changes nothing else in this setup.
 
 ## What it touches
 
-- `<config>/skills/<name>` → one symlink per skill, seven of them
+- `<config>/skills/<name>` → one symlink per skill, eight of them
 
 The two credential skills — `LlmDataBoundary` and `SecretHygiene` — are not
 here. They came with the security step, because they are part of the protection

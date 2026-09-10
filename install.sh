@@ -12,7 +12,7 @@
 #   herdr      one terminal for every agent                        (warn only)
 #   jira       the Jira CLI (ankitpokhrel/jira-cli)                (warn only)
 #   plugins    caveman and code-review                             (warn only)
-#   skills     the seven workflow skills                           (warn only)
+#   skills     the eight workflow skills                           (warn only)
 #
 # A failure in `security` stops the install: it is the only module that protects
 # anything, and a machine that thinks it has guardrails but does not is worse off
